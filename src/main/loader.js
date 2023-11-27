@@ -53,51 +53,6 @@ class PluginLoader {
         const not_plugins_message = "No plugins to be loaded.";
         const has_plugins_message = `Done! ${plugins_length} plugins loaded!`;
         output(plugins_length == 0 ? not_plugins_message : has_plugins_message);
-
-        // 合并 Preload
-        this.#preprocessing();
-    }
-
-    //对preload脚本进行预处理，合并
-    #preprocessing() {
-        output("Preprocessing plugins' preloads...");
-
-        const code_block = (title, content) => {
-            let str = "";
-            str += `\n// ${title}`;
-            str += "\n{\n";
-            str += content;
-            str += "\n}";
-            return str;
-        }
-
-        const hook = fs.readFileSync(path.join(LiteLoader.path.root, "src/preload/hook.js"), "utf-8");
-        const api = fs.readFileSync(path.join(LiteLoader.path.root, "src/preload/index.js"), "utf-8");
-        const loader = fs.readFileSync(path.join(LiteLoader.path.root, "src/renderer/index.js"), "utf-8");
-
-        let preloadContents = "";
-        preloadContents += "// LiteLoaderQQNT 自动合并的 Preload 文件，请勿修改，否则可能会被覆盖。\n";
-        preloadContents += `// 生成时间：${new Date().toLocaleString()} \n`;
-        preloadContents += code_block("原始 preload.js", hook);
-        preloadContents += code_block("LiteLoader 对象", api);
-        preloadContents += code_block("渲染进程 Loader", loader);
-
-        for (const [slug, plugin] of Object.entries(this.#plugins)) {
-            const preload_path = plugin.manifest.injects?.preload;
-            if (preload_path) {
-                const preload = fs.readFileSync(path.join(plugin.path.plugin, preload_path), "utf-8");
-                preloadContents += code_block(`插件：${plugin.manifest.name}`, preload);
-            }
-        }
-
-        // 计算 plugin-preloads.js 路径
-        const winBasePath = path.join(qq_install_dir, "/resources/app/versions/", LiteLoader.versions.qqnt);
-        const unixBasePath = path.join(relativeRootPath(qq_install_dir), LiteLoader.path.profile);
-        const basePath = LiteLoader.os.platform == "win32" ? winBasePath : unixBasePath;
-        const dest = path.join(basePath, "plugin-preloads.js");
-
-        fs.writeFileSync(dest, preloadContents, { encoding: "utf-8" });
-        output("Preprocessing plugins' preloads done!");
     }
 
     #getManifest(plugin_path) {
@@ -175,13 +130,6 @@ class PluginLoader {
         for (const [slug, plugin] of Object.entries(this.#plugins)) {
             plugin.exports?.onBrowserWindowCreated?.(window, plugin);
         }
-        // 注入Preload
-        const preloads = new Set([
-            ...window.webContents.session.getPreloads(),
-            path.join(LiteLoader.path.profile, "plugin-preloads.js"),
-        ]);
-        // 加载Set中的Preload脚本
-        window.webContents.session.setPreloads([...preloads]);
     }
 }
 

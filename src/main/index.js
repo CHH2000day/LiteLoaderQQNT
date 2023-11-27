@@ -5,22 +5,7 @@ const fs = require("fs");
 const { output, qq_install_dir, relativeRootPath } = require("./base.js");
 const { PluginLoader } = require("./loader.js");
 
-
-// 计算 plugin-preloads.js 路径
-const preloadPath = (() => {
-    if (LiteLoader.os.platform == "win32") {
-        const basePath = `${qq_install_dir}\\resources\\app\\versions\\${LiteLoader.versions.qqnt}`;
-        return `${basePath}\\application\\..\\plugin-preloads.js`;
-    }
-    if (LiteLoader.os.platform == "linux") {
-        const basePath = relativeRootPath(`${qq_install_dir}/resources/app`);
-        return `${basePath}${LiteLoader.path.profile}/plugin-preloads.js`;
-    }
-    if (LiteLoader.os.platform == "darwin") {
-        const basePath = relativeRootPath(`${qq_install_dir}/Resources/app/application`);
-        return `${basePath}${LiteLoader.path.profile}/plugin-preloads.js`;
-    }
-})();
+app.commandLine.appendSwitch("disable-features", "OutOfBlinkCors");
 
 
 // 监听窗口创建
@@ -44,12 +29,6 @@ function observeNewBrowserWindow(callback) {
                         additionalArguments: ["--fetch-schemes=app,llqqnt"]
                     }
                 };
-                if (fs.existsSync(path.normalize(preloadPath))) {
-                    config.webPreferences.preload = preloadPath;
-                }
-                else {
-                    output("plugin-preloads.js does not exist, check if there was any error above.");
-                }
                 const window = Reflect.construct(target, [config], newTarget);
                 callback(window);
                 return window;
