@@ -34,7 +34,6 @@ const LITELOADER_PROFILE = LITELOADER_PROFILE_ENV || LITELOADER_PROFILE_CONST;
 const LiteLoader = {
     path: {
         root: path.join(__dirname, "../../"),
-        builtins: path.join(__dirname, "../../builtins"),
         default_profile: LITELOADER_PROFILE_CONST,
         profile: LITELOADER_PROFILE,
         config: path.join(LITELOADER_PROFILE, "config.json"),

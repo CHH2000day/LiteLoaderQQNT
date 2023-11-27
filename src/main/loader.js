@@ -10,21 +10,8 @@ class PluginLoader {
         output("Start loading plugins.");
 
         // 插件目录插件名
-        let builtin_dirnames = [];
         let plugin_dirnames = [];
 
-        // 内置的核心插件
-        try {
-            builtin_dirnames = fs.readdirSync(
-                LiteLoader.path.builtins,
-                "utf-8"
-            );
-        }
-        catch (error) {
-            output("The builtins directory does not exist.");
-        }
-
-        // 外置第三方插件
         try {
             plugin_dirnames = fs.readdirSync(LiteLoader.path.plugins, "utf-8");
         }
@@ -35,10 +22,6 @@ class PluginLoader {
         // 加载插件
         try {
             // 获取单个插件目录名
-            for (const builtin_dirname of builtin_dirnames) {
-                const plugin_path = path.join(LiteLoader.path.builtins, builtin_dirname);
-                this.#loadPlugin(plugin_path);
-            }
             for (const plugin_dirname of plugin_dirnames) {
                 const plugin_path = path.join(LiteLoader.path.plugins, plugin_dirname);
                 this.#loadPlugin(plugin_path);
