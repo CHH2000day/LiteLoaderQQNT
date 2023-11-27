@@ -31,28 +31,6 @@ export class PluginLoader {
         for (const [slug, plugin] of Object.entries(this.#plugins)) {
             plugin?.onLoad?.();
         }
-        const interval = setInterval(async () => {
-            var quit = () => {
-                LiteLoaderFunc.exit();
-            };
-
-            if (window.location.href.indexOf("#/tray-menu") != -1) {
-                clearInterval(interval);
-
-                var element = document.querySelector(".menu-wrap:last-child");
-                var newElement = element.cloneNode(true);
-                element.parentNode.replaceChild(newElement, element);
-
-                newElement.addEventListener("click", quit);
-            } else if (window.location.href.indexOf("login.html") != -1) {
-                clearInterval(interval);
-                var element = document.querySelector("div[aria-label='关闭']");
-                var newElement = element.cloneNode(true);
-                element.parentNode.replaceChild(newElement, element);
-
-                newElement.addEventListener("click", quit);
-            }
-        }, 50);
     }
 
     // 初始化配置界面

@@ -77,12 +77,6 @@ ipcMain.on(
     (event, message) => void (event.returnValue = LiteLoader)
 );
 
-ipcMain.on(
-    "LiteLoader.LiteLoader.exit",
-    (event, message) => void app.exit()
-);
-
-
 if (!fs.existsSync(LiteLoader.path.plugins)) {
     fs.mkdirSync(LiteLoader.path.plugins, { recursive: true });
 }

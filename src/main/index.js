@@ -35,27 +35,11 @@ function observeNewBrowserWindow(callback) {
             }
         });
 
-        let ProxyMenu = new Proxy(loaded_module.Menu, {
-            get(target, property, receiver) {
-                if (property == "buildFromTemplate") {
-                    return (template) => {
-                        const quit_item = template.find(item => item.id == "quit");
-                        quit_item && (quit_item.click = () => app.exit());
-                        return Reflect.get(target, property, receiver)(template);
-                    }
-                }
-                return Reflect.get(target, property, receiver);
-            }
-        });
-
         // Proxy的方法不需要重新解构loaded_module，提高性能
         return new Proxy(loaded_module, {
             get(target, property, receiver) {
                 if (property == "BrowserWindow") {
                     return ProxyBrowserWindow;
-                }
-                if (property == "Menu") {
-                    return ProxyMenu;
                 }
                 return Reflect.get(target, property, receiver);
             }
